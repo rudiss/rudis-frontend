@@ -53,3 +53,72 @@ To give you some insight into what we're looking for, and questions that we're l
 - If you were part of a team that needed to refactor or improve the application to better maintain and support it over the next 2-3 years, what are things you would change or improve, and why?
 
 Be prepared to demo your running application, and walk us through the user story with your commits and decisions. We're excited to see what you come up with! Have fun :)
+
+
+# Questions
+
+1. How well are decisions documented?
+	- **Code Clarity & Naming Conventions:**
+		- Functions and variables follow clear, descriptive naming to enhance readability.
+		- Example: `formatETHBalance()` explicitly describes its role in converting balances from Wei to ETH.
+	- **Inline Comments & Documentation:**
+		- Key functions and logic blocks include inline comments to explain:
+		 - What the function does
+		 - Why it’s implemented a certain way
+		 - Edge cases handled
+	- **Commit History & PR Descriptions:**
+		- Each change is documented with meaningful commit messages.
+		- The PR description outlines the problem, solution, and trade-offs considered.
+
+2. How well do the implementations solve the user stories?
+
+	Each user story was carefully designed with:
+	- **Accuracy** (correct ETH conversions using BigNumber.js).
+	- **Maintainability** (refactored sagas for reusable API calls).
+	- **Performance** (pagination ensures transactions load efficiently).
+	- **Usability** (users receive immediate feedback on invalid ETH addresses).
+	- **Scalability** (support for additional API endpoints without major code changes).
+
+	### Problem-Solving Approach
+
+	| Feature                     | Approach Taken                              | Alternative Considered                       | Why Chosen?                                                                 |
+	|-----------------------------|---------------------------------------------|---------------------------------------------|----------------------------------------------------------------------------|
+	| ETH Conversion              | Used BigNumber.js for precision             | Used simple division (`parseFloat(value) / 1e18`) | BigNumber.js ensures accurate decimal handling for large numbers.            |
+	| Redux Saga Refactoring      | Implemented a generic API saga handler      | Kept separate sagas for balance & transactions | The new approach reduces duplicate logic and makes adding new sagas easier. |
+	| Ethereum Address Validation | Used wallet-address-validator library       | Used regex-based validation                 | The library handles multiple ETH formats and ensures accuracy.              |
+	| Transaction Pagination      | Added “Load More” button                    | Implemented infinite scrolling              | A button gives users control over data loading and is simpler to implement initially. |
+	| Shareable URLs              | Updated React Router with `/address/:address` | Used Redux state only                       | URL-based navigation allows easy sharing & bookmarking.                     |
+
+3. Long-term improvements for maintainability (2-3 years plan)
+
+	To future-proof the project, the following improvements should be considered:
+
+	- **Switch to React Query or SWR for State Management**
+		- Current State: Redux + Sagas manually manage API requests & caching.
+		- Improvement: Use React Query or SWR for:
+		 - Automatic caching & background refetching
+		 - Better performance with less boilerplate code
+		 - Built-in error handling & retries
+
+	- **Improve Pagination UX with Infinite Scrolling**
+		- Current State: Users click “Load More” to fetch transactions.
+		- Improvement: Implement infinite scrolling with IntersectionObserver to load more transactions seamlessly.
+		- Benefits:
+		 - Eliminates extra clicks
+		 - Creates a smoother user experience
+		 - Feels more dynamic and real-time
+
+	- **Centralized API Service for Clean Architecture**
+		- Current State: API calls are scattered across different sagas.
+		- Improvement: Create a centralized `apiService.js` module that:
+		 - Handles all API calls in a single location
+		 - Standardizes error handling & retries
+		 - Makes adding new API endpoints easier
+
+	- **Enhanced Error Handling & User Feedback**
+		- Current State: Simple error messages are shown when API calls fail.
+		- Improvement:
+		 - Retry failed API calls automatically before showing an error.
+		 - Provide detailed feedback on why a transaction load failed (e.g., API rate limits, invalid responses).
+		 - Display loading states per request instead of for the entire page.
+
